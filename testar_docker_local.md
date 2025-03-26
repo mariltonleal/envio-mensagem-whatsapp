@@ -33,11 +33,30 @@ Successfully tagged whatsapp-mcp:latest
 docker run -p 8080:8080 -e BASE_API_URL=https://sua-api.exemple.com -e API_KEY=sua-chave-api whatsapp-mcp
 ```
 
+## Explicação das alterações recentes
+
+### Instalação do fastmcp diretamente do GitHub
+
+Devido a problemas de compatibilidade com o pacote publicado no PyPI, modificamos a instalação do fastmcp para usar diretamente o repositório GitHub oficial:
+
+```
+git+https://github.com/AnthropicMmcpSdk/fastmcp.git
+```
+
+Esta abordagem garante que estamos usando a versão mais recente e compatível com nosso ambiente Python.
+
+### Adição de ferramentas de diagnóstico
+
+Atualizamos o Dockerfile para:
+- Instalar o git (necessário para instalar pacotes diretamente do GitHub)
+- Atualizar o pip para a versão mais recente
+- Adicionar diagnósticos para mostrar a versão do Python e do pip durante o build
+
 ## Solução de problemas comuns
 
 ### Erro: Could not find a version that satisfies the requirement fastmcp>=0.1.0
 
-Este erro ocorre porque a biblioteca `fastmcp` requer Python 3.10 ou superior. A solução foi alterar a imagem base do Docker de `python:3.9-slim` para `python:3.10-slim`.
+Este erro foi resolvido instalando o fastmcp diretamente do GitHub em vez de usar o PyPI.
 
 ### Erro: Could not find a version that satisfies the requirement asyncio
 
@@ -51,13 +70,4 @@ Este erro ocorre porque o Dockerfile estava referenciando um arquivo que não ex
 
 Após confirmar que a imagem Docker constrói corretamente em sua máquina local:
 
-1. Faça commit das alterações em seu repositório:
-```bash
-git add Dockerfile requirements.txt
-git commit -m "Corrige configuração do Docker para o Smithery"
-git push
-```
-
-2. Volte ao Smithery e tente o deployment novamente.
-
-Lembre-se de que o Smithery executa o Docker em um ambiente controlado, então algumas configurações de rede ou variáveis de ambiente podem ser diferentes do seu ambiente local.
+1. Volte ao Smithery e tente o deployment novamente.
