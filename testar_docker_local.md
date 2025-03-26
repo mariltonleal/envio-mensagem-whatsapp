@@ -35,6 +35,10 @@ docker run -p 8080:8080 -e BASE_API_URL=https://sua-api.exemple.com -e API_KEY=s
 
 ## Solução de problemas comuns
 
+### Erro: Could not find a version that satisfies the requirement fastmcp>=0.1.0
+
+Este erro ocorre porque a biblioteca `fastmcp` requer Python 3.10 ou superior. A solução foi alterar a imagem base do Docker de `python:3.9-slim` para `python:3.10-slim`.
+
 ### Erro: Could not find a version that satisfies the requirement asyncio
 
 Este erro ocorre porque `asyncio` é um módulo built-in do Python 3.4+ e não deve ser instalado via pip. Foi corrigido removendo esta dependência do arquivo `requirements.txt`.
