@@ -1,27 +1,33 @@
 import httpx
 import asyncio
+import os
 from mcp.server.fastmcp import FastMCP, Context
 from typing import Union, List
 
 # Create an MCP server
 mcp = FastMCP("WhatsApp Sender")
 
-# API configuration
-BASE_API_URL = "https://evodesent2.gorgolead.com.br"
-API_KEY = "429683C4C97741ACAS1DAS4A9SJS72"  # Replace with your actual API key if this is a placeholder
+# API configuration from environment variables
+BASE_API_URL = os.environ.get("BASE_API_URL", "https://evodesent2.gorgolead.com.br")
+API_KEY = os.environ.get("API_KEY", "429683C4C97741ACAS1DAS4A9SJS72")
+DEFAULT_INSTANCE = os.environ.get("DEFAULT_INSTANCE", "default")
 
 @mcp.tool()
-async def send_whatsapp_message(phone_number: Union[str, int], message: str, instance_name: str, ctx: Context = None) -> str:
+async def send_whatsapp_message(phone_number: Union[str, int], message: str, instance_name: str = None, ctx: Context = None) -> str:
     """Sends a WhatsApp message to the specified number.
     
     Args:
         phone_number: The phone number to send the message to (include country code, no spaces or symbols). Can be string or integer.
         message: The text message to send.
-        instance_name: The WhatsApp instance name to use (required).
+        instance_name: The WhatsApp instance name to use (optional, uses default if not specified).
     
     Returns:
         A string indicating success or failure of the message send attempt.
     """
+    # Use default instance if none provided
+    if instance_name is None:
+        instance_name = DEFAULT_INSTANCE
+    
     # Converter explicitamente para string logo no início para garantir compatibilidade
     phone_number = str(phone_number)
     
@@ -67,19 +73,23 @@ async def send_whatsapp_message(phone_number: Union[str, int], message: str, ins
         return f"❌ Error sending message: {str(e)}"
 
 @mcp.tool()
-async def send_whatsapp_with_interval(phone_numbers: List[Union[str, int]], message: str, instance_name: str, interval_seconds: int = 0, ctx: Context = None) -> str:
+async def send_whatsapp_with_interval(phone_numbers: List[Union[str, int]], message: str, instance_name: str = None, interval_seconds: int = 0, ctx: Context = None) -> str:
     """
     Sends a WhatsApp message to multiple numbers with a specified interval between each message.
     
     Args:
         phone_numbers: List of phone numbers (string or integer) to send the message to.
         message: The text message to send to all numbers.
-        instance_name: The WhatsApp instance name to use (required).
+        instance_name: The WhatsApp instance name to use (optional, uses default if not specified).
         interval_seconds: Time to wait between each message in seconds (default: 0).
         
     Returns:
         A string summarizing the results of all message send attempts.
     """
+    # Use default instance if none provided
+    if instance_name is None:
+        instance_name = DEFAULT_INSTANCE
+        
     results = []
     success_count = 0
     failure_count = 0
@@ -108,7 +118,7 @@ async def send_whatsapp_with_interval(phone_numbers: List[Union[str, int]], mess
     return summary + "\n" + "\n".join(results)
 
 @mcp.tool()
-async def send_whatsapp_media(phone_number: Union[str, int], media_url: str, media_type: str, instance_name: str, ctx: Context = None) -> str:
+async def send_whatsapp_media(phone_number: Union[str, int], media_url: str, media_type: str, instance_name: str = None, ctx: Context = None) -> str:
     """
     Sends a media message (image, video, document, or audio) via WhatsApp to the specified number.
     
@@ -116,11 +126,15 @@ async def send_whatsapp_media(phone_number: Union[str, int], media_url: str, med
         phone_number: The phone number to send the message to (include country code, no spaces or symbols). Can be string or integer.
         media_url: URL of the media to be sent.
         media_type: Type of media ('image', 'video', 'document', or 'audio').
-        instance_name: The WhatsApp instance name to use (required).
+        instance_name: The WhatsApp instance name to use (optional, uses default if not specified).
     
     Returns:
         A string indicating success or failure of the media send attempt.
     """
+    # Use default instance if none provided
+    if instance_name is None:
+        instance_name = DEFAULT_INSTANCE
+        
     if ctx:
         ctx.info(f"Attempting to send {media_type} to {phone_number} using instance {instance_name}")
     
@@ -161,7 +175,7 @@ async def send_whatsapp_media(phone_number: Union[str, int], media_url: str, med
         return f"❌ Error sending {media_type}: {str(e)}"
 
 @mcp.tool()
-async def send_whatsapp_media_with_interval(phone_numbers: List[Union[str, int]], media_url: str, media_type: str, instance_name: str, interval_seconds: int = 0, ctx: Context = None) -> str:
+async def send_whatsapp_media_with_interval(phone_numbers: List[Union[str, int]], media_url: str, media_type: str, instance_name: str = None, interval_seconds: int = 0, ctx: Context = None) -> str:
     """
     Sends a media message (image, video, document, or audio) to multiple numbers with a specified interval.
     
@@ -169,12 +183,16 @@ async def send_whatsapp_media_with_interval(phone_numbers: List[Union[str, int]]
         phone_numbers: List of phone numbers (string or integer) to send the media to.
         media_url: URL of the media to be sent.
         media_type: Type of media ('image', 'video', 'document', or 'audio').
-        instance_name: The WhatsApp instance name to use (required).
+        instance_name: The WhatsApp instance name to use (optional, uses default if not specified).
         interval_seconds: Time to wait between each message in seconds (default: 0).
         
     Returns:
         A string summarizing the results of all media send attempts.
     """
+    # Use default instance if none provided
+    if instance_name is None:
+        instance_name = DEFAULT_INSTANCE
+        
     results = []
     success_count = 0
     failure_count = 0
@@ -201,16 +219,20 @@ async def send_whatsapp_media_with_interval(phone_numbers: List[Union[str, int]]
     return summary + "\n" + "\n".join(results)
 
 @mcp.tool()
-async def check_instance_status(instance_name: str, ctx: Context = None) -> str:
+async def check_instance_status(instance_name: str = None, ctx: Context = None) -> str:
     """
     Verifica se uma instância específica está funcionando.
     
     Args:
-        instance_name: Nome da instância do WhatsApp a ser verificada.
+        instance_name: Nome da instância do WhatsApp a ser verificada (opcional, usa a padrão se não especificada).
     
     Returns:
         Uma string indicando o status da instância e informações adicionais.
     """
+    # Use default instance if none provided
+    if instance_name is None:
+        instance_name = DEFAULT_INSTANCE
+        
     if ctx:
         ctx.info(f"Verificando status da instância {instance_name}")
     
