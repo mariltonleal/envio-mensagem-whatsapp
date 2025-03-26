@@ -1,5 +1,5 @@
 httpx>=0.23.0
-fastmcp>=0.1.0
+git+https://github.com/AnthropicMmcpSdk/fastmcp.git
 mcp-sdk>=0.6.0
 websockets>=10.4
 typing-extensions>=4.0.0
