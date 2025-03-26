@@ -1,0 +1,37 @@
+# Smithery.ai configuration
+startCommand:
+  type: stdio
+  configSchema:
+    type: object
+    properties:
+      base_api_url:
+        type: string
+        title: "URL da API Evolution"
+        description: "URL da instância da Evolution API (ex: https://sua-api.exemplo.com)"
+        default: "https://evolution-api.exemplo.com"
+      api_key:
+        type: string
+        title: "Chave da API"
+        description: "Chave de acesso à API Evolution"
+      instance_name:
+        type: string
+        title: "Nome da Instância"
+        description: "Nome da instância do WhatsApp configurada na Evolution API"
+        default: "default"
+    required: ["base_api_url", "api_key"]
+  commandFunction: |-
+    (config) => {
+      return {
+        command: "python",
+        args: ["envio_mensagem.py"],
+        env: {
+          "BASE_API_URL": config.base_api_url,
+          "API_KEY": config.api_key,
+          "DEFAULT_INSTANCE": config.instance_name || "default"
+        }
+      };
+    }
+
+build:
+  dockerfile: "Dockerfile"
+  dockerBuildPath: "."
